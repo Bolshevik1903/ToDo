@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
@@ -71,7 +72,13 @@ fun MainScreen() {
                 label = { Text( text = "New task" ) },
                 value = newTask.value,
                 onValueChange = { newTask.value = it },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = { newTask.value = TextFieldValue() }) {
+                        Icon(Icons.Default.Close, null)
+                    }
+
+                }
             )
             Tasks(tasks) {value ->
                 newTask.value = TextFieldValue(value)
@@ -88,7 +95,8 @@ fun Tasks(tasks: MutableList<String>, selectTask: (String) -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         items(tasks) { task ->
-            TaskItem(task = task,
+            TaskItem(
+                     task = task,
                      deleteTask = {
                          tasks.remove(it)
                      },
