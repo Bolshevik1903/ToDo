@@ -33,6 +33,9 @@ fun MainScreen() {
     val isEditing = remember {
         mutableStateOf(false)
     }
+    val enabled = remember {
+        mutableStateOf(false)
+    }
     var temp = 0
     Scaffold(topBar = {
         TopAppBar(
@@ -45,6 +48,7 @@ fun MainScreen() {
                     if(!isEditing.value) {
                         tasks.add(newTask.value.text)
                         newTask.value = TextFieldValue()
+                        enabled.value = false
                     }
                     else {
                         tasks.set(temp, newTask.value.text)
@@ -52,7 +56,7 @@ fun MainScreen() {
                         newTask.value = TextFieldValue()
                     }
 
-                }) {
+                }, enabled = enabled.value) {
                     if(isEditing.value) {
                         Icon(Icons.Filled.Done, null)
                     } else {
@@ -71,7 +75,9 @@ fun MainScreen() {
             TextField(
                 label = { Text( text = "New task" ) },
                 value = newTask.value,
-                onValueChange = { newTask.value = it },
+                onValueChange = {
+                    enabled.value = newTask.value.text.isNotEmpty()
+                    newTask.value = it },
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
                     IconButton(onClick = { newTask.value = TextFieldValue() }) {
@@ -94,6 +100,7 @@ fun Tasks(tasks: MutableList<String>, selectTask: (String) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
+
         items(tasks) { task ->
             TaskItem(
                      task = task,
@@ -123,6 +130,11 @@ fun TaskItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val checkedState = remember { mutableStateOf(false) }
+            Checkbox(
+                checked = checkedState.value,
+                onCheckedChange = { checkedState.value = it }
+            )
             Text(text = task)
             IconButton(
                 onClick = {
@@ -150,7 +162,7 @@ fun Contacts() {
 }
 */
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     ToDoTheme {
