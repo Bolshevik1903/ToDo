@@ -14,8 +14,8 @@ interface TaskDao {
     @Query("select * from Task where name=:name")
     fun fetchByName(name: String) : List<Task>
 
-    //@Query("select * from Task where status=:status")
-    //fun fetchByStatus(name: Int): List<Task>
+    @Query("select * from Task where status=:status")
+    fun fetchByStatus(status: Int): List<Task>
 
     @Delete
     fun delete(task: Task)
