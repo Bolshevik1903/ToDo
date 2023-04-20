@@ -16,16 +16,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pe.edu.upc.todo.data.entities.Task
+import pe.edu.upc.todo.data.local.AppDatabase
 import pe.edu.upc.todo.ui.theme.ToDoTheme
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
     val tasks = remember {
-        mutableStateListOf<String>()
+        mutableStateOf(emptyList<Task>())
     }
     val newTask = remember {
         mutableStateOf(TextFieldValue())
@@ -36,8 +39,16 @@ fun MainScreen() {
     val enabled = remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
+
+    val taskDao = AppDatabase.getInstance(context).taskDao()
+
+
+
     var temp = 0
-    Scaffold(topBar = {
+    Scaffold(
+        topBar = {
+
         TopAppBar(
             elevation = 4.dp,
             title = {
@@ -46,12 +57,13 @@ fun MainScreen() {
             actions = {
                 IconButton(onClick = {
                     if(!isEditing.value) {
-                        tasks.add(newTask.value.text)
+                        //tasks.add(newTask.value.text)
+                        taskDao.insert(Task(newTask.value.text, 0))
                         newTask.value = TextFieldValue()
                         enabled.value = false
                     }
                     else {
-                        tasks.set(temp, newTask.value.text)
+                        //tasks.set(temp, newTask.value.text)
                         isEditing.value = false
                         newTask.value = TextFieldValue()
                     }
@@ -86,11 +98,11 @@ fun MainScreen() {
 
                 }
             )
-            Tasks(tasks) {value ->
+            /*Tasks(tasks) {value ->
                 newTask.value = TextFieldValue(value)
                 isEditing.value = true
                 temp = tasks.indexOf(value)
-            }
+            }*/
         }
     }
 }
@@ -115,6 +127,7 @@ fun Tasks(tasks: MutableList<String>, selectTask: (String) -> Unit) {
     }
 }
 
+//Changes here
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskItem(
